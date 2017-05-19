@@ -13,7 +13,7 @@ int main() {
 	 * Restart to complete the process.
 	 * */
 	wiringPiSetup();
-	wiringPiSPISetup(CHANNEL, 3000000);
+	wiringPiSPISetup(CHANNEL, 750000);
 	unsigned char buffer[256];
 	while(1){
 		printf("Send over SPI:     ");
