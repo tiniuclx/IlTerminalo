@@ -1,9 +1,9 @@
 #define PICTOR_FASTMODE
 #include <avr/io.h>
 
-#include "../pictor.h"
-#include "../fonts/OryxB.h"
-#include "../fonts/Mash.h"
+#include "../pictor/pictor.h"
+#include "../pictor/fonts/OryxB.h"
+#include "../pictor/fonts/Mash.h"
 
 void init_spi_slave(void);
 uint8_t rx(void);
@@ -11,7 +11,7 @@ void tx(uint8_t b);
 
 int main() {
 	pictorInit(0);
-	pictorSetRotation(3);
+	pictorSetRotation(0);
 	unsigned char input_char = 'a';
 	unsigned char buffer[256] = "";
 	int i=0;
