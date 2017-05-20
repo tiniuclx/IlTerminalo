@@ -1,10 +1,8 @@
 #include <stdio.h>
-#include <wiringPi.h>
-#include <wiringPiSPI.h>
+#include <pigpio.h>
 #include <string.h>
 
-#define CHANNEL 0
-#define CE0 11 // Chip Enable pin
+void clean_up(unsigned h);
 
 int main() {
 	/*
@@ -13,22 +11,25 @@ int main() {
 	 * Then go to: Interfacing Options and enable SPI
 	 * Restart to complete the process.
 	 * */
-	wiringPiSetup();
-	wiringPiSPISetup(CHANNEL, 500000);
-	pinMode(CE0, OUTPUT);
-	digitalWrite(CE0, 1);
-	unsigned char buffer[256];
+	if(gpioInitialise() < 0) return 1;
+	unsigned h = spiOpen(0, 750000, 0);
+	if(h < 0) return 2;
+	char buffer[64];
 	while(1){
 		printf("Send over SPI:     ");
 		if(!scanf("%s", buffer))
 			printf("\nError reading from stdin!");
-		digitalWrite(CE0, 0);
-		delay(10);
-		wiringPiSPIDataRW(CHANNEL, buffer, strlen(buffer)+1);
-		delay(10);
-		digitalWrite(CE0, 1);
-		printf("Received over SPI: %s\n", buffer);		
-		memset(buffer,0,sizeof(buffer));
+		if(!strcmp(buffer, "exit")) {
+			clean_up(h);
+			return 0;
+		}
+		spiWrite(h, buffer, 64);
 	}
+	clean_up(h);
 	return 0;
+}
+
+void clean_up(unsigned h){
+	spiClose(h);
+	gpioTerminate();
 }
